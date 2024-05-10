@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "655717914601",
+    "project_id": "apol-29a72",
+    "storage_bucket": "apol-29a72.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:655717914601:android:f592d7b9b51ecbf0b89d78",
+        "android_client_info": {
+          "package_name": "com.example.sample_auth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5cube14VLEt_h9WoevxNK0MdG6Xg60zQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
