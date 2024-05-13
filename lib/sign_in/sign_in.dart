@@ -6,9 +6,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class SignIn extends StatefulWidget {
-  const SignIn({super.key});
+  const SignIn({Key? key}) : super(key: key);
 
   @override
   State<SignIn> createState() => _SignUpState();
@@ -17,6 +18,53 @@ class SignIn extends StatefulWidget {
 class _SignUpState extends State<SignIn> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late final GoogleSignIn _googleSignIn;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize GoogleSignIn with client ID
+    _googleSignIn = GoogleSignIn(
+      clientId:
+          '655717914601-gv7nlgjoef5cedbbvpnk5jt77731gfmb.apps.googleusercontent.com',
+    );
+  }
+
+  Future<void> _signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount!.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+      final User? user = userCredential.user;
+
+      print('User signed in with Google: ${user!.displayName}');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Signed in with Google: ${user.displayName}"),
+        backgroundColor: Colors.green,
+      ));
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    } catch (e) {
+      print("Google Sign-In Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Failed to sign in with Google: $e"),
+        backgroundColor: Colors.red,
+      ));
+    }
+  }
 
   Future<void> _signIn() async {
     try {
@@ -35,14 +83,14 @@ class _SignUpState extends State<SignIn> {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => HomeScreen()));
     } on FirebaseAuthException catch (e) {
-      print("Firebase Auth Error: ${e.message}");
+      print('Firebase Error: ${e.message}');
       // Display error message to the user if needed
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Sign-in failed: ${e.message}"),
         backgroundColor: Colors.red,
       ));
     } catch (e) {
-      print("Error: $e");
+      print('Error: $e');
       // Display generic error message to the user if needed
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("An error occurred. Please try again later."),
@@ -54,13 +102,24 @@ class _SignUpState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+        body: Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color.fromARGB(255, 80, 101, 222),
+            Color.fromARGB(255, 196, 143, 189),
+          ],
+        ),
+      ),
+      child: Center(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
           child: Column(
             children: [
-              SizedBox(
-                height: 80,
+              const SizedBox(
+                height: 120,
               ),
               SizedBox(
                 width: 200,
@@ -69,17 +128,17 @@ class _SignUpState extends State<SignIn> {
                   'assets/Cognispace.png',
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Username",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 95, 10, 148)),
+                        color: Color.fromARGB(255, 52, 40, 100)),
                   ),
                   SizedBox(
                     width: 225,
@@ -90,28 +149,36 @@ class _SignUpState extends State<SignIn> {
                   width: 300,
                   height: 50,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(25)),
+                    borderRadius: const BorderRadius.all(Radius.circular(25)),
                     border: Border.all(
-                        color: const Color.fromARGB(255, 95, 10, 148),
+                        color: const Color.fromARGB(255, 52, 40, 100),
                         width: 2.0),
                   ),
                   child: TextField(
                       controller: _emailController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 2),
+                        icon: Padding(
+                          padding: EdgeInsets.only(left: 15),
+                          child: Icon(
+                            Icons.mail,
+                            color: Color.fromARGB(255, 52, 40, 100),
+                            size: 20,
+                          ),
+                        ),
                       ))),
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Password",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: const Color.fromARGB(255, 95, 10, 148)),
+                        color: Color.fromARGB(255, 52, 40, 100)),
                   ),
                   SizedBox(
                     width: 225,
@@ -122,19 +189,27 @@ class _SignUpState extends State<SignIn> {
                   width: 300,
                   height: 50,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(25)),
+                      borderRadius: const BorderRadius.all(Radius.circular(25)),
                       border: Border.all(
-                          color: const Color.fromARGB(255, 95, 10, 148),
+                          color: const Color.fromARGB(255, 52, 40, 100),
                           width: 2.0)),
                   child: TextField(
                     controller: _passwordController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 2),
+                      icon: Padding(
+                        padding: EdgeInsets.only(left: 15),
+                        child: Icon(
+                          Icons.lock,
+                          color: Color.fromARGB(255, 52, 40, 100),
+                          size: 20,
+                        ),
+                      ),
                     ),
                     obscureText: true,
                   )),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               Row(
@@ -145,7 +220,7 @@ class _SignUpState extends State<SignIn> {
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
                           const Color.fromARGB(
-                              255, 95, 10, 148)), // Background color
+                              255, 52, 40, 100)), // Background color
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -156,7 +231,7 @@ class _SignUpState extends State<SignIn> {
                       width: 100,
                       height: 30,
                       alignment: Alignment.center,
-                      child: Text(
+                      child: const Text(
                         "Log In",
                         style: TextStyle(color: Colors.white),
                       ),
@@ -164,16 +239,16 @@ class _SignUpState extends State<SignIn> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 30,
+              const SizedBox(
+                height: 20,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(width: 60),
-                  Text("Don't Have an Account?"),
-                  SizedBox(
-                    width: 75,
+                  const SizedBox(width: 60),
+                  const Text("Don't Have an Account?"),
+                  const SizedBox(
+                    width: 50,
                   ),
                   TextButton(
                     onPressed: () {
@@ -182,36 +257,36 @@ class _SignUpState extends State<SignIn> {
                           MaterialPageRoute(
                               builder: (context) => SignUpScreen()));
                     },
-                    child: Text(
+                    child: const Text(
                       "Sign Up",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.blue),
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 22, 25, 193)),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 40,
                   ),
                 ],
               ),
-              SizedBox(
-                height: 20,
+              const SizedBox(
+                height: 70,
               ),
-              Text("Sign in using"),
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: NetworkImage(
-                              'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png'))),
+              const Text("Sign in using"),
+              TextButton(
+                onPressed: _signInWithGoogle,
+                child: SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: Image.asset(
+                    'assets/google.png',
+                  ),
                 ),
-              ),
+              )
             ],
           ),
         ),
       ),
-    );
+    ));
   }
 }

@@ -4,10 +4,16 @@ import 'package:sample_auth/sign_in/sign_in.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  runApp(const MyApp());
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    runApp(const MyApp());
+  } catch (e) {
+    print('Error initializing Firebase: $e');
+  }
 }
 
 class MyApp extends StatelessWidget {
