@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flip_card/flip_card.dart';
+import 'package:sample_auth/flashcard/edit_flashcard.dart';
 
 class FlashcardPage extends StatefulWidget {
   @override
@@ -7,128 +7,78 @@ class FlashcardPage extends StatefulWidget {
 }
 
 class _FlashcardPageState extends State<FlashcardPage> {
-  List<String> questions = ['unsang unsaon?', 'pato?', 'sheeshh'];
-  List<String> answers = ['Ing ana', 'toya', 'shesh'];
+  String _containerName = "Flashcard Container";
 
-  int currentQuestionIndex = 0;
-
-  void nextQuestion() {
-    setState(() {
-      currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
-    });
+  void _editName() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Edit Name"),
+          content: TextField(
+            onChanged: (value) {
+              setState(() {
+                _containerName = value;
+              });
+            },
+            decoration: InputDecoration(hintText: "Enter new name"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  void previousQuestion() {
-    setState(() {
-      currentQuestionIndex =
-          (currentQuestionIndex - 1 + questions.length) % questions.length;
-    });
+  void _navigateToEditFlashcard() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditFlashcard()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Flashcards',
-          style: TextStyle(
-            fontFamily: 'Roboto',
-          ),
-        ),
-        backgroundColor: Colors.blue,
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
+      body: GestureDetector(
+        onTap: _navigateToEditFlashcard,
+        child: Container(
+          padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FlipCard(
-                direction: FlipDirection.HORIZONTAL,
-                front: Flashcard(
-                  text: questions[currentQuestionIndex],
-                  onTap: () {
-                    setState(() {
-                      currentQuestionIndex++;
-                      if (currentQuestionIndex >= questions.length) {
-                        currentQuestionIndex = 0;
-                      }
-                    });
-                  },
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 222, 163, 213),
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-                back: Flashcard(
-                  text: answers[currentQuestionIndex],
-                  onTap: () {
-                    setState(() {
-                      currentQuestionIndex++;
-                      if (currentQuestionIndex >= questions.length) {
-                        currentQuestionIndex = 0;
-                      }
-                    });
-                  },
-                ),
-              ),
-              SizedBox(height: 20.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: previousQuestion,
-                    child: Text(
-                      'Previous',
-                      style: TextStyle(
-                        fontFamily: 'Roboto',
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _containerName,
+                        style: TextStyle(fontSize: 20.0),
                       ),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                    ),
-                  ),
-                  SizedBox(width: 20.0),
-                  ElevatedButton(
-                    onPressed: nextQuestion,
-                    child: Text(
-                      'Next',
-                      style: TextStyle(
-                        fontFamily: 'Roboto',
+                    TextButton(
+                      onPressed: _editName,
+                      child: Text('Edit'),
+                      style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.blue),
                       ),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class Flashcard extends StatelessWidget {
-  final String text;
-  final VoidCallback onTap;
-
-  const Flashcard({required this.text, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Card(
-        child: Container(
-          width: 300,
-          height: 200,
-          alignment: Alignment.center,
-          child: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
           ),
         ),
       ),

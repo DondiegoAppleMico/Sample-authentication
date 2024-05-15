@@ -12,7 +12,7 @@ class ProfilePage extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // Show a loading indicator while waiting for the authentication state to change
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         } else {
           // Check if a user is signed in
           if (snapshot.hasData && snapshot.data != null) {
@@ -21,7 +21,7 @@ class ProfilePage extends StatelessWidget {
             return _buildProfilePage(user);
           } else {
             // User is signed out, display a sign-in prompt or redirect to the sign-in page
-            return Center(
+            return const Center(
               child: Text('Please sign in to view your profile.'),
             );
           }

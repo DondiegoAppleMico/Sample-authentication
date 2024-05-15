@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:sample_auth/home/home_page.dart';
-import 'package:sample_auth/timer/timer_page.dart';
+import 'package:sample_auth/quiz/quiz_page.dart';
 import 'package:sample_auth/flashcard/flashcard_page.dart';
 import 'package:sample_auth/profile/profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   static final List<Widget> _widgetOptions = <Widget>[
     const HomePage(), // Placeholder for Home Page content
-    TimerPage(),
+    QuizCreatorApp(),
     FlashcardPage(),
     const ProfilePage(),
   ];
@@ -36,37 +37,21 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.timer),
-            label: 'Timer',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.space_dashboard),
-            label: 'Flash Card',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ], // Customize the selected item color
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: Colors.blue,
-        selectedFontSize: 14,
-        unselectedFontSize: 12,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
-        selectedIconTheme: const IconThemeData(size: 28),
-        unselectedIconTheme: const IconThemeData(size: 24),
-        type: BottomNavigationBarType.fixed,
+      bottomNavigationBar: GNav(
+        backgroundColor: Color.fromARGB(255, 32, 10, 51),
+        color: Colors.white,
+        activeColor: Color.fromARGB(255, 120, 118, 245),
+        tabBackgroundColor: Color.fromARGB(255, 64, 52, 75),
+        gap: 8,
+        onTabChange: (index) {
+          _onItemTapped(index);
+        },
+        tabs: const [
+          GButton(icon: Icons.home, text: 'Home'),
+          GButton(icon: Icons.quiz, text: 'Quiz'),
+          GButton(icon: Icons.space_dashboard, text: 'Flashcard'),
+          GButton(icon: Icons.person, text: 'Profile'),
+        ],
       ),
     );
   }
