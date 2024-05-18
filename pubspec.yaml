@@ -41,8 +41,8 @@ dependencies:
   flip_card: ^0.5.0
   google_nav_bar: ^5.0.6
   shared_preferences: ^2.0.13
-  flutter_colorpicker: ^0.6.0
   flare_flutter: ^3.0.0
+  flutter_colorpicker: ^1.0.3
 
 dev_dependencies:
   flutter_test:

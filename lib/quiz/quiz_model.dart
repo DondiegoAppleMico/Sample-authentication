@@ -1,9 +1,16 @@
+import 'package:flutter/material.dart';
+
 class Quiz {
   String id;
   String title;
   List<Question> questions;
+  final Color color;
 
-  Quiz({required this.id, required this.title, required this.questions});
+  Quiz(
+      {required this.id,
+      required this.title,
+      required this.questions,
+      required this.color});
 
   factory Quiz.fromJson(Map<String, dynamic> json) {
     return Quiz(
@@ -11,6 +18,7 @@ class Quiz {
       title: json['title'],
       questions:
           (json['questions'] as List).map((q) => Question.fromJson(q)).toList(),
+      color: Color(json['color'] ?? 0xFFFFFFFF),
     );
   }
 
@@ -19,6 +27,7 @@ class Quiz {
       'id': id,
       'title': title,
       'questions': questions.map((q) => q.toJson()).toList(),
+      'color': color.value,
     };
   }
 }
