@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sample_auth/sign_in/sign_in.dart';
+import 'package:sample_auth/sign_in/sign_in.dart'; // Replace this with the correct path to your SignIn page
 
 class SignOutPage extends StatelessWidget {
   const SignOutPage({Key? key}) : super(key: key);
@@ -20,8 +20,9 @@ class SignOutPage extends StatelessWidget {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-                SignIn()), // Replace SignIn() with your sign-in page
+          builder: (context) =>
+              SignIn(), // Replace SignIn() with your sign-in page
+        ),
         (route) => false, // Remove all existing routes
       );
     } catch (e) {
@@ -31,9 +32,27 @@ class SignOutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () => _signOut(context),
-      child: Text('Sign Out'),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text('Sign Out', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.grey[200],
+        elevation: 0,
+      ),
+      body: Center(
+        child: ElevatedButton.icon(
+          onPressed: () => _signOut(context),
+          icon: Icon(Icons.logout, color: Colors.white),
+          label: Text('Sign Out', style: TextStyle(color: Colors.white)),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

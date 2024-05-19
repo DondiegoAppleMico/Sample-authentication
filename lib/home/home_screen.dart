@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:sample_auth/home/home_page.dart';
 import 'package:sample_auth/quiz/quiz_page.dart';
-import 'package:sample_auth/flashcard/flashcard_page.dart';
+import 'package:sample_auth/flashcard/flashcard_home.dart';
 import 'package:sample_auth/profile/profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -19,9 +19,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   static final List<Widget> _widgetOptions = <Widget>[
-    const HomePage(), // Placeholder for Home Page content
+    ScreenHome(), // Placeholder for Home Page content
     QuizCreatorApp(),
-    FlashcardPage(),
+    FlashcardListHome(),
     const ProfilePage(),
   ];
 

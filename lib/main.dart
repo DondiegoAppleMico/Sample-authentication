@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:sample_auth/sign_in/sign_in.dart';
+import 'package:sample_auth/sign_in/cover_page.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -44,8 +44,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: SignIn(),
+    return MaterialApp(
+      home: CoverPage(),
     );
   }
 }

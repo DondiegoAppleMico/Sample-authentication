@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'quiz_model.dart';
+import 'quiz_taker_screen.dart'; // Import the QuizTakerScreen
 
 class QuizCreatorScreen extends StatefulWidget {
   final Quiz quiz;
@@ -71,7 +72,7 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
       appBar: AppBar(
         title: Text(widget.quiz.title,
             style: const TextStyle(
-                color: Color.fromARGB(255, 249, 170, 232),
+                color: Color.fromARGB(255, 239, 226, 236),
                 fontSize: 28,
                 fontWeight: FontWeight.bold)),
         backgroundColor: Color.fromARGB(255, 45, 23, 77),
@@ -88,8 +89,8 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
               Icons.delete,
               size: 30,
               color: _deleteMode
-                  ? Colors.red
-                  : Colors.white, // Change color to indicate delete mode
+                  ? Colors.white
+                  : Colors.red, // Change color to indicate delete mode
             ),
             onPressed: () {
               setState(() {
@@ -101,7 +102,7 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/BGspace.jpg"), // Adjust image path
             fit: BoxFit.cover,
@@ -117,6 +118,18 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => QuizTakerScreen(quiz: widget.quiz),
+            ),
+          );
+        },
+        backgroundColor: Colors.deepPurple,
+        child: Icon(Icons.play_arrow, color: Colors.white),
       ),
       backgroundColor: Color.fromARGB(255, 224, 154, 154),
     );
@@ -143,7 +156,7 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
             children: [
               TextField(
                 controller: _questionController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Enter your question',
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(20))),
@@ -166,7 +179,7 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
                   padding: EdgeInsets.symmetric(horizontal: 26, vertical: 12),
                   textStyle: TextStyle(fontSize: 18),
                 ),
-                child: Text('Add Question',
+                child: const Text('Add Question',
                     style: TextStyle(
                       color: Color.fromARGB(255, 234, 230,
                           236), // White color for the text // Bigger font size
@@ -183,17 +196,20 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
 
   Widget _buildQuestionList() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
           height: 50,
         ),
-        Text(
-          'Questions',
-          style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 237, 220, 220)),
+        Container(
+          height: 50,
+          child: const Text(
+            'Questions',
+            style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 237, 220, 220)),
+          ),
         ),
         SizedBox(height: 10),
         for (var i = 0; i < widget.quiz.questions.length; i++)
@@ -201,13 +217,13 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
             margin: EdgeInsets.symmetric(vertical: 5.0),
             padding: EdgeInsets.all(15.0),
             decoration: BoxDecoration(
-              color: Color.fromARGB(255, 142, 179, 214),
+              color: Color.fromARGB(255, 217, 231, 148),
               borderRadius: BorderRadius.circular(15.0),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 5,
+                  color: Color.fromARGB(255, 235, 173, 66).withOpacity(0.5),
+                  spreadRadius: 7,
+                  blurRadius: 10,
                   offset: Offset(0, 3),
                 ),
               ],
@@ -221,7 +237,7 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
                   style: TextStyle(fontSize: 16)),
               trailing: _deleteMode
                   ? IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.delete,
                         color: Colors.red,
                         size: 30,

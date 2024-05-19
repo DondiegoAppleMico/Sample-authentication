@@ -115,21 +115,18 @@ class _SignUpState extends State<SignIn> {
       ),
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           child: Column(
             children: [
               const SizedBox(
-                height: 120,
+                height: 80,
               ),
               SizedBox(
-                width: 200,
-                height: 200,
+                width: 250,
+                height: 250,
                 child: Image.asset(
-                  'assets/Cognispace.png',
+                  'assets/Cog.png',
                 ),
-              ),
-              const SizedBox(
-                height: 20,
               ),
               const Row(
                 mainAxisAlignment: MainAxisAlignment.center,

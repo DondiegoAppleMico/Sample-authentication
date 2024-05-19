@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sample_auth/sign_in/sign_in.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -52,6 +53,10 @@ class _SignUpPageState extends State<SignUpScreen> {
         backgroundColor: Colors.red,
       ));
     }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SignIn()),
+    );
   }
 
   @override
@@ -84,7 +89,7 @@ class _SignUpPageState extends State<SignUpScreen> {
                   SizedBox(
                     width: 130,
                     height: 130,
-                    child: Image.asset('assets/Cognispace.png'),
+                    child: Image.asset('assets/Cog.png'),
                   ),
                   const SizedBox(
                     height: 10,
@@ -189,16 +194,17 @@ class _SignUpPageState extends State<SignUpScreen> {
                       )),
                   const SizedBox(height: 40.0),
                   ElevatedButton(
-                    onPressed: _signUp,
+                    onPressed: () => _signUp(),
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
-                          const Color.fromARGB(255, 52, 40, 100)),
+                        const Color.fromARGB(255, 52, 40, 100),
+                      ),
                     ),
                     child: const Text(
                       'Create Account',
                       style: TextStyle(color: Colors.white),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),

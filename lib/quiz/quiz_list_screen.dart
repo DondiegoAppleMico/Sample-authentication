@@ -89,7 +89,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
         actions: [
           IconButton(
             icon: Icon(
-              Icons.delete,
+              _deleteMode ? Icons.cancel : Icons.delete,
               size: 30,
               color: _deleteMode ? Colors.white : Colors.red,
             ),
@@ -105,7 +105,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/BGspace.jpg'),
                 fit: BoxFit.cover,
@@ -138,7 +138,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
                     }
                   },
                   child: Container(
-                    padding: EdgeInsets.all(16),
+                    padding: EdgeInsets.all(30),
                     decoration: BoxDecoration(
                       color: _selectedIndex == index
                           ? Colors.redAccent
@@ -148,7 +148,10 @@ class _QuizListScreenState extends State<QuizListScreen> {
                     child: ListTile(
                       title: Text(
                         _quizzes[index].title,
-                        style: const TextStyle(fontSize: 24),
+                        style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 37, 31, 76)),
                       ),
                       trailing: _deleteMode
                           ? IconButton(
