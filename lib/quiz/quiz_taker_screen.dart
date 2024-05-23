@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart'; // Import CircularPercentIndicator
+import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'quiz_model.dart';
-import 'quiz_percentage.dart';
-import 'package:confetti/confetti.dart'; // Import Confetti package
+import 'package:confetti/confetti.dart';
 
 class QuizTakerScreen extends StatefulWidget {
   final Quiz quiz;
@@ -21,14 +22,13 @@ class _QuizTakerScreenState extends State<QuizTakerScreen>
   late AnimationController _animationController;
   late Animation<Offset> _animation;
   final _quizAnswerController = TextEditingController();
-  late ConfettiController _confettiController = ConfettiController();
+  late ConfettiController _confettiController;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration:
-          const Duration(seconds: 1), // 1-second duration for the animation
+      duration: const Duration(seconds: 1),
       vsync: this,
     );
     _animation = Tween<Offset>(
@@ -56,6 +56,7 @@ class _QuizTakerScreenState extends State<QuizTakerScreen>
         _animationController.forward(from: 0.0);
       } else {
         _quizFinished = true;
+        _saveQuizResult();
       }
     });
   }
@@ -68,8 +69,26 @@ class _QuizTakerScreenState extends State<QuizTakerScreen>
         _animationController.forward(from: 0.0);
       } else {
         _quizFinished = true;
+        _saveQuizResult();
       }
     });
+  }
+
+  Future<void> _saveQuizResult() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      CollectionReference userQuizzes = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('quizzes');
+
+      await userQuizzes.add({
+        'quizTitle': widget.quiz.title,
+        'score': _score,
+        'totalQuestions': widget.quiz.questions.length,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    }
   }
 
   @override
@@ -202,8 +221,6 @@ class _QuizTakerScreenState extends State<QuizTakerScreen>
     } else {
       message = "Excellent!!";
       _confettiController?.play();
-      // Start confetti animation
-      // You can use a package like 'flutter_confetti' for confetti animation
     }
 
     return Center(
@@ -228,7 +245,6 @@ class _QuizTakerScreenState extends State<QuizTakerScreen>
             ),
           ),
           SizedBox(height: 20),
-          // Display quiz statistics with circular percentage animation
           CircularPercentIndicator(
             radius: 90.0,
             lineWidth: 25.0,

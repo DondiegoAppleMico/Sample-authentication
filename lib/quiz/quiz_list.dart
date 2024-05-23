@@ -34,6 +34,7 @@ class _QuizListScreenState extends State<QuizListScreen> {
       appBar: AppBar(
         title: Text('Quiz List'),
         automaticallyImplyLeading: false,
+        centerTitle: true,
       ),
       body: Padding(
         padding: EdgeInsets.all(20),

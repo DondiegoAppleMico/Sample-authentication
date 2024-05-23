@@ -26,6 +26,8 @@ class _FlashcardCreatorState extends State<FlashcardCreator> {
     return Scaffold(
         appBar: AppBar(
           title: Text(flashcardListName),
+          backgroundColor: Color.fromARGB(255, 25, 22, 29),
+          foregroundColor: Colors.amber,
         ),
         body: Container(
           decoration: BoxDecoration(
@@ -42,7 +44,7 @@ class _FlashcardCreatorState extends State<FlashcardCreator> {
               Container(
                 padding: EdgeInsets.all(20.0),
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 179, 201, 215),
+                  color: Color.fromARGB(255, 218, 192, 98),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

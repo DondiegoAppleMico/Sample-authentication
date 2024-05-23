@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sample_auth/home/home_notes.dart';
+import 'package:sample_auth/home/home_tasks.dart';
+import 'package:sample_auth/home/home_timer.dart';
 
 class ScreenHome extends StatefulWidget {
   @override
@@ -47,10 +50,10 @@ class _ScreenHomeState extends State<ScreenHome>
                 text: 'Tasks'),
             Tab(
                 icon: Icon(
-                  Icons.settings,
+                  Icons.timer,
                   color: Color.fromARGB(255, 237, 218, 161),
                 ),
-                text: 'Settings'),
+                text: 'Timer'),
           ],
         ),
         centerTitle: true,
@@ -62,61 +65,9 @@ class _ScreenHomeState extends State<ScreenHome>
         children: [
           NotesPage(),
           TasksPage(),
-          SettingsPage(),
+          TimerPage(),
         ],
       ),
-    );
-  }
-}
-
-class NotesPage extends StatefulWidget {
-  @override
-  _NotesPageState createState() => _NotesPageState();
-}
-
-class _NotesPageState extends State<NotesPage> {
-  List<String> _notes = [];
-
-  void _addNote() {
-    setState(() {
-      _notes.add('Note ${_notes.length + 1}');
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView.builder(
-        itemCount: _notes.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(_notes[index]),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addNote,
-        tooltip: 'Add Note',
-        child: Icon(Icons.add),
-      ),
-    );
-  }
-}
-
-class TasksPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Tasks Page'),
-    );
-  }
-}
-
-class SettingsPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Settings Page'),
     );
   }
 }

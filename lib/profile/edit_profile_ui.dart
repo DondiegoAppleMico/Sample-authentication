@@ -1,34 +1,72 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class EditProfileUI extends StatefulWidget {
+class EditProfile extends StatefulWidget {
+  final Map<String, dynamic>? userData;
+
+  const EditProfile({Key? key, this.userData}) : super(key: key);
+
   @override
-  _EditProfileUIState createState() => _EditProfileUIState();
+  _EditProfileState createState() => _EditProfileState();
 }
 
-class _EditProfileUIState extends State<EditProfileUI> {
-  DateTime _selectedDate = DateTime.now();
+class _EditProfileState extends State<EditProfile> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _usernameController;
+  late TextEditingController _firstNameController;
+  late TextEditingController _lastNameController;
+  DateTime? _selectedBirthdate;
 
-  // Method to show a Snackbar to confirm that changes have been saved
-  void _showSaveConfirmation(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Profile changes saved'),
-        duration: Duration(seconds: 2), // Adjust the duration as needed
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    _usernameController =
+        TextEditingController(text: widget.userData?['username'] ?? '');
+    _firstNameController =
+        TextEditingController(text: widget.userData?['first_name'] ?? '');
+    _lastNameController =
+        TextEditingController(text: widget.userData?['last_name'] ?? '');
+    _selectedBirthdate = widget.userData?['birthdate'] != null
+        ? DateTime.parse(widget.userData!['birthdate'])
+        : null;
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != _selectedDate)
-      setState(() {
-        _selectedDate = picked;
-      });
+  Future<void> _saveProfile() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        User? user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          DocumentReference userDocRef =
+              FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+          await userDocRef.set({
+            'username': _usernameController.text,
+            'first_name': _firstNameController.text,
+            'last_name': _lastNameController.text,
+            'birthdate': _selectedBirthdate != null
+                ? _selectedBirthdate!.toIso8601String()
+                : null,
+          }, SetOptions(merge: true));
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Profile updated successfully')),
+          );
+
+          Navigator.of(context).pop();
+        }
+      } on FirebaseException catch (e) {
+        print('Error updating profile: ${e.message}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update profile: ${e.message}')),
+        );
+      } catch (e) {
+        print('Error updating profile: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update profile: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -36,189 +74,169 @@ class _EditProfileUIState extends State<EditProfileUI> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Profile'),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-          onPressed: () {},
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.settings,
-              color: Colors.white,
-            ),
-            onPressed: () {},
-          ),
-        ],
+        backgroundColor: Colors.deepPurple,
       ),
-      body: Container(
-        padding: EdgeInsets.only(left: 15, top: 20, right: 15),
-        child: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).unfocus();
-          },
-          child: ListView(
-            children: [
-              Center(
-                child: Stack(
+      body: Stack(
+        children: [
+          // Background image
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                    'assets/Qhist.jpg'), // Replace with your image path
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          // Content
+          SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
                   children: [
-                    Container(
-                      width: 130,
-                      height: 130,
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 4, color: Colors.white),
-                        boxShadow: [
-                          BoxShadow(
-                            spreadRadius: 2,
-                            blurRadius: 10,
-                            color: Colors.black.withOpacity(0.1),
-                          )
-                        ],
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(
-                            'https://cdn.pixabay.com/photo/2024/05/11/06/47/tropical-8754092_640.jpg',
-                          ),
-                        ),
+                    Card(
+                      color: Colors.white.withOpacity(0.9),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            width: 4,
-                            color: Colors.white,
-                          ),
-                          color: Colors.blue,
-                        ),
-                        child: Icon(
-                          Icons.edit,
-                          color: Colors.white,
+                      elevation: 8,
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              controller: _usernameController,
+                              decoration: InputDecoration(
+                                labelText: 'Username',
+                                labelStyle: TextStyle(
+                                  color: Colors.deepPurple,
+                                  fontSize: 18,
+                                ),
+                                border: OutlineInputBorder(),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.deepPurple,
+                                  ),
+                                ),
+                              ),
+                              style: TextStyle(fontSize: 18),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your username';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            TextFormField(
+                              controller: _firstNameController,
+                              decoration: InputDecoration(
+                                labelText: 'First Name',
+                                labelStyle: TextStyle(
+                                  color: Colors.deepPurple,
+                                  fontSize: 18,
+                                ),
+                                border: OutlineInputBorder(),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.deepPurple,
+                                  ),
+                                ),
+                              ),
+                              style: TextStyle(fontSize: 18),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your first name';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            TextFormField(
+                              controller: _lastNameController,
+                              decoration: InputDecoration(
+                                labelText: 'Last Name',
+                                labelStyle: TextStyle(
+                                  color: Colors.deepPurple,
+                                  fontSize: 18,
+                                ),
+                                border: OutlineInputBorder(),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.deepPurple,
+                                  ),
+                                ),
+                              ),
+                              style: TextStyle(fontSize: 18),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your last name';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            ListTile(
+                              tileColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                side: BorderSide(color: Colors.deepPurple),
+                              ),
+                              title: Text(
+                                _selectedBirthdate == null
+                                    ? 'Select Birthdate'
+                                    : 'Birthdate: ${_selectedBirthdate!.toLocal()}'
+                                        .split(' ')[0],
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.deepPurple),
+                              ),
+                              trailing: Icon(Icons.calendar_today,
+                                  color: Colors.deepPurple),
+                              onTap: () async {
+                                DateTime? picked = await showDatePicker(
+                                  context: context,
+                                  initialDate:
+                                      _selectedBirthdate ?? DateTime.now(),
+                                  firstDate: DateTime(1900),
+                                  lastDate: DateTime(2101),
+                                );
+                                if (picked != null &&
+                                    picked != _selectedBirthdate) {
+                                  setState(() {
+                                    _selectedBirthdate = picked;
+                                  });
+                                }
+                              },
+                            ),
+                            SizedBox(height: 30),
+                            ElevatedButton(
+                              onPressed: _saveProfile,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepPurple,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 50, vertical: 15),
+                                textStyle: TextStyle(fontSize: 18),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: Text(
+                                'Save Changes',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 35),
-              buildOvalTextField("Username", "Enter Username", false),
-              buildOvalTextField("First Name", "Enter First Name", false),
-              buildOvalTextField("Last Name", "Enter Last Name", false),
-              buildBirthDateField("Birth Date", context),
-              SizedBox(height: 35),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  OutlinedButton(
-                    onPressed: () {},
-                    child: Text(
-                      "CANCEL",
-                      style: TextStyle(
-                        fontSize: 14,
-                        letterSpacing: 2.2,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      _showSaveConfirmation(
-                          context); // Call the method to show confirmation
-                    },
-                    child: Text(
-                      "SAVE",
-                      style: TextStyle(
-                        fontSize: 14,
-                        letterSpacing: 2.2,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildOvalTextField(
-      String labelText, String placeholder, bool isPasswordTextField) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 30.0),
-      child: TextField(
-        obscureText: isPasswordTextField,
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          labelText: labelText,
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          hintText: placeholder,
-          hintStyle: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(
-              color: Colors.grey,
             ),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(
-              color: Colors.black,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildBirthDateField(String labelText, BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 30.0),
-      child: TextField(
-        readOnly: true,
-        onTap: () => _selectDate(context),
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          labelText: labelText,
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          hintText: "${_selectedDate.toLocal()}".split(' ')[0],
-          hintStyle: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(
-              color: Colors.grey,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(
-              color: Colors.deepPurple,
-            ),
-          ),
-        ),
+        ],
       ),
     );
   }

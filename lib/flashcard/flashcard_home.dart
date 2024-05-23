@@ -11,7 +11,7 @@ class _FlashcardListHomeState extends State<FlashcardListHome> {
   List<String> flashcardNames = ['Flashcard 1', 'Flashcard 2'];
   List<Color> flashcardColors = [
     Color.fromARGB(255, 122, 19, 166),
-    const Color.fromARGB(255, 122, 19, 166)
+    Color.fromARGB(255, 166, 19, 88)
   ]; // Initial colors
   bool _deleteMode = false;
 

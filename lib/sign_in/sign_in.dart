@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sample_auth/home/home_screen.dart';
 import 'package:sample_auth/sign_in/sign_up.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,6 +21,7 @@ class _SignUpState extends State<SignIn> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late final GoogleSignIn _googleSignIn;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -48,6 +49,16 @@ class _SignUpState extends State<SignIn> {
           await _auth.signInWithCredential(credential);
       final User? user = userCredential.user;
 
+      if (user != null) {
+        // Save user info to Firestore
+        await _firestore.collection('users').doc(user.uid).set({
+          'displayName': user.displayName,
+          'email': user.email,
+          'photoURL': user.photoURL,
+          'lastSignInTime': user.metadata.lastSignInTime,
+        }, SetOptions(merge: true));
+      }
+
       print('User signed in with Google: ${user!.displayName}');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Signed in with Google: ${user.displayName}"),
@@ -73,11 +84,23 @@ class _SignUpState extends State<SignIn> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        // Save user info to Firestore
+        await _firestore.collection('users').doc(user.uid).set({
+          'displayName': user.displayName,
+          'email': user.email,
+          'photoURL': user.photoURL,
+          'lastSignInTime': user.metadata.lastSignInTime,
+        }, SetOptions(merge: true));
+      }
+
       // If sign in succeeds, navigate to the next screen or perform any other action.
       // For example:
-      print("Sign up successful.");
+      print("Sign in successful.");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Sign In Successfull"),
+        content: Text("Sign In Successful"),
         backgroundColor: Colors.green,
       ));
       Navigator.push(
